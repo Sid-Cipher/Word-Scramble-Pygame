@@ -22,7 +22,7 @@ background = pygame.image.load("background.png")
 WIDTH, HEIGHT = 1280,720 # Been placed here only for future references of width and height
 scaled_background = pygame.transform.scale(background, (1280, 720))
 
-#Loading the custom font
+#Loading the custom font (#Been here for future references
 font_size = 40
 font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
 
@@ -30,6 +30,7 @@ font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
 start_time = 30  # Start with 30 seconds
 time_left = start_time
 clock = pygame.time.Clock()
+start_ticks = pygame.time.get_ticks()  # Record the starting tick (in milliseconds)
 
 # Score system
 
@@ -43,6 +44,7 @@ hard_words = ["elephant", "umbrella", "happiness"]
 current_level = "easy"
 words = {"easy": easy_words, "medium": medium_words, "hard": hard_words}
 word_to_guess = random.choice(words[current_level])
+user_input = ""
 
 #Functions to Code
 
@@ -63,8 +65,17 @@ def scramble_word(word):
 
     return scrambled
 
+def pause():
+    pass
+
+def hint():
+    pass
+
+def score():
+    pass
+
 #timer_function
-def display_timer(screen, font, time_left):
+def display_timer(screen, font, time_left, elapsed_time):
     """
     Draws a timer on the screen, changing color based on time remaining.
 
@@ -73,20 +84,28 @@ def display_timer(screen, font, time_left):
     font: The Pygame font object for rendering the timer.
     time_left: The remaining time (in seconds).
     """
+
+    font_size = 98
+    font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
+
+    time_left = max(0, start_time - elapsed_time)  # Ensure it doesn't go negative
+
     # Change color based on time
-    if time_left >= 10:
+    if time_left > 10:
         color = (255, 255, 255)  # White
     else:
         color = (255, 0, 0)  # Red
 
     # Render the timer text
-    timer_text = font.render(f"Time Left: {time_left}", True, color)
+    timer_text = font.render(f"{int(time_left)}", True, color)
 
     # Get the text's rectangle and center it on the screen
-    timer_rect = timer_text.get_rect(center=(640, 50))  # Adjust the position as needed
+    timer_rect = timer_text.get_rect(center=(1137, 40))  # Adjust position as needed
 
     # Draw the text on the screen
     screen.blit(timer_text, timer_rect)
+
+    return time_left
 
 
 #game Loop
@@ -95,6 +114,55 @@ running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            running = False
+
+        # Capture user input through the keyboard
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:  # Check if the user presses Enter
+                # Check if the guessed word is correct
+                if user_input.lower() == word_to_guess.lower():
+                    print("Correct!")
+                    # Update score or level
+                    score += 1
+                    # Select a new word and scramble it
+                    word_to_guess = random.choice(words[current_level])
+                    scrambled_word = scramble_word(word_to_guess)
+                    user_input = ""  # Reset input for the next word
+                else:
+                    print("Try Again!")
+            elif event.key == pygame.K_BACKSPACE:
+                user_input = user_input[:-1]  # Remove the last character
+            else:
+                user_input += event.unicode  # Add the typed character to user input
+
+    # Draw the scrambled word on the screen
+    scrambled_text = font.render(f"Scrambled: {scramble_word}", True, (255, 255, 255))
+    screen.blit(scrambled_text, (100, 200))  # Adjust position as needed
+
+    # Draw user input on the screen
+    user_input_text = font.render(f"Your Guess: {user_input}", True, (255, 255, 255))
+    screen.blit(user_input_text, (100, 300))  # Adjust position as needed
+
+    # Calculate elapsed time
+    current_ticks = pygame.time.get_ticks()
+    elapsed_time = (current_ticks - start_ticks) / 1000  # Convert milliseconds to seconds
+
+    # Clear the screen and draw the background
+    screen.blit(scaled_background, (0, 0))
+
+    # Call the timer function
+    time_left = display_timer(screen, font, start_time, elapsed_time)
+
+    # End the game when the timer reaches zero
+    if time_left <= 0:
+        running = False
+        print("Time's up!")  #prints in console
+
+    # Update the display
+    pygame.display.flip()
+
+    # Cap the frame rate
+    clock.tick(30)  # 30 FPS
 
 
 
