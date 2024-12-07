@@ -145,25 +145,19 @@ while running:
     #Draw the hint button and pause button
     screen.blit(hint_button, (28, 578))
     screen.blit(pause_button, (1161,609))
-
     # Draw the scrambled word on the screen
     scrambled_text = font.render(f"Scrambled: {scramble_word}", True, (255, 255, 255))
     screen.blit(scrambled_text, (100, 200))  # Adjust position as needed
-
     # Draw user input on the screen
     user_input_text = font.render(f"Your Guess: {user_input}", True, (255, 255, 255))
     screen.blit(user_input_text, (100, 300))  # Adjust position as needed
-
     # Calculate elapsed time
     current_ticks = pygame.time.get_ticks()
     elapsed_time = (current_ticks - start_ticks) / 1000  # Convert milliseconds to seconds
-
     # Clear the screen and draw the background
     screen.blit(scaled_background, (0, 0))
-
     # Call the timer function
     time_left = display_timer(screen, font, start_time, elapsed_time)
-
     # End the game when the timer reaches zero
     if time_left <= 0:
         running = False
