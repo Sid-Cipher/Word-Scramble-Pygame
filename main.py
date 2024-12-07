@@ -2,6 +2,7 @@ import pygame
 import time
 import random
 
+from matplotlib.pyplot import pause
 
 #Initialziing the Pygame
 pygame.init()
@@ -14,6 +15,12 @@ screen = pygame.display.set_mode((1280,720))
 pygame.display.set_caption("Word Scramble")
 icon = pygame.image.load('crossword.png')
 pygame.display.set_icon(icon)
+
+#Loading the Assets 😭
+hint_button = pygame.image.load("hint_button.png")
+hint_button = pygame.transform.scale(hint_button, (110, 132))
+pause_button = pygame.image.load("pause_button.png")
+pause_button = pygame.transform.scale(pause_button, (62, 70))
 
 # Load your high-res image
 background = pygame.image.load("background.png")
@@ -34,7 +41,7 @@ start_ticks = pygame.time.get_ticks()  # Record the starting tick (in millisecon
 
 # Score system
 
-score = 0
+score = 1647
 
 # Word levels
 
@@ -65,25 +72,30 @@ def scramble_word(word):
 
     return scrambled
 
-def pause():
+def pause(screen):
+
+    # Drawing the pause button on screen
+
     pass
 
-def hint():
+def hint(screen):
     pass
+    # Drawing the hint button on screen
 
-def score():
+def score(screen, font):
+
+    # Drawing the score button on screen
+
+    font_size = 70
+    font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
+
+    #Score function yet to be created !!
     pass
 
 #timer_function
 def display_timer(screen, font, time_left, elapsed_time):
-    """
-    Draws a timer on the screen, changing color based on time remaining.
 
-    Parameters:
-    screen: Pygame screen object where the timer will be displayed.
-    font: The Pygame font object for rendering the timer.
-    time_left: The remaining time (in seconds).
-    """
+   #Drawing a timer on the screen
 
     font_size = 98
     font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
@@ -134,6 +146,10 @@ while running:
                 user_input = user_input[:-1]  # Remove the last character
             else:
                 user_input += event.unicode  # Add the typed character to user input
+
+    #Draw the hint button and pause button
+    screen.blit(hint_button, (28, 578))
+    screen.blit(pause_button, (1161,609))
 
     # Draw the scrambled word on the screen
     scrambled_text = font.render(f"Scrambled: {scramble_word}", True, (255, 255, 255))
