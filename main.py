@@ -2,45 +2,41 @@ import pygame
 import time
 import random
 
-from matplotlib.pyplot import pause
-
 #Initialziing the Pygame
 pygame.init()
 
 #Display Screen Width
 screen = pygame.display.set_mode((1280,720))
 
-
 #Title and Icon
 pygame.display.set_caption("Word Scramble")
 icon = pygame.image.load('crossword.png')
 pygame.display.set_icon(icon)
 
-#Loading the Assets 😭
+#Loading the Assets 😭 (crying in pressure)
 hint_button = pygame.image.load("hint_button.png")
 hint_button = pygame.transform.scale(hint_button, (110, 132))
 pause_button = pygame.image.load("pause_button.png")
 pause_button = pygame.transform.scale(pause_button, (62, 70))
+pause_menu = pygame.image.load("Pause_menu.png")
+pause_menu = pygame.transform.scale(pause_menu,(1280,720))
 
-# Load your high-res image
+#Loading the background
 background = pygame.image.load("background.png")
-
-# Scale it to fit the screen
 WIDTH, HEIGHT = 1280,720 # Been placed here only for future references of width and height
 scaled_background = pygame.transform.scale(background, (1280, 720))
 
-#Loading the custom font (#Been here for future references
+#Loading the custom font (#Been here for future references) (Delete during final product demo)
 font_size = 40
 font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
 
-# Timer
+# Timer 🕛
 start_time = 30  # Start with 30 seconds
 time_left = start_time
 clock = pygame.time.Clock()
 start_ticks = pygame.time.get_ticks()  # Record the starting tick (in milliseconds)
 
 # Score system
-
 score = 1647
 
 # Word levels
@@ -57,26 +53,25 @@ user_input = ""
 
 #scramble code (Returns Scrambled)
 def scramble_word(word):
-    if len(word) <= 1:
-        return word  # A single letter doesn't need scrambling.
-
     word_list = list(word)  # Convert the word to a list of characters.
     random.shuffle(word_list)  # Shuffle the characters randomly.
-
     scrambled = ''.join(word_list)  # Join the shuffled characters back into a string.
-
     # Ensure the scrambled word isn't the same as the original.
     while scrambled == word:
         random.shuffle(word_list)
         scrambled = ''.join(word_list)
-
     return scrambled
 
-def pause(screen):
-
-    # Drawing the pause button on screen
-
-    pass
+def pause():
+    paused = True
+    while paused:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    paused = False
+        #Volume button and Restart button should be added here if was added
+        screen.blit(pause_menu, (0, 0))
+        pygame.display.flip
 
 def hint(screen):
     pass
