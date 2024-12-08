@@ -123,17 +123,21 @@ while running:
             if event.key == pygame.K_RETURN:  # Check if the user presses Enter
                 # Check if the guessed word is correct
                 if user_input.lower() == word_to_guess.lower():
-                    print("Correct!")
-                    # Update score or level
-                    score += 1
-                    # Select a new word and scramble it
+                    score += 10 if not hint_used else 5
+                    current_level = 'medium' if score > 30 else "hard" if score > 60 else "easy"
                     word_to_guess = random.choice(words[current_level])
                     scrambled_word = scramble_word(word_to_guess)
-                    user_input = ""  # Reset input for the next word
+                    user_input = ""
+                    hint_used = False
+
                 else:
-                    print("Try Again!")
+                    score -= 1 # Penalize for wrong guess
             elif event.key == pygame.K_BACKSPACE:
                 user_input = user_input[:-1]  # Remove the last character
+            elif event.key == pygame.K_QUESTION:
+                pause_game()
+            elif event.key == pygame.K_QUESTION:
+                hint_used = True
             else:
                 user_input += event.unicode  # Add the typed character to user input
 
@@ -153,6 +157,11 @@ while running:
     screen.blit(scaled_background, (0, 0))
     # Call the timer function
     time_left = display_timer(screen, font, start_time, elapsed_time)
+
+    #If hint used
+    if hint_used:
+        display_hint(screen,font,word_to_guess)
+
     # End the game when the timer reaches zero
     if time_left <= 0:
         running = False
