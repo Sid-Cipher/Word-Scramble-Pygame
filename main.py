@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+import winsound
 
 #Initialziing the Pygame
 pygame.init()
@@ -50,6 +51,30 @@ word_to_guess = random.choice(words[current_level])
 user_input = ""
 
 #Functions to Code
+
+#Sound effects and Music(yet to be added)
+def play_win_sound():
+    """Plays a victory sound using a series of beeps."""
+    winsound.Beep(1200, 300)  # High-pitched beep
+    winsound.Beep(1500, 300)  # Higher-pitched beep
+    winsound.Beep(1800, 300)  # Even higher-pitched beep
+
+def play_lost_sound():
+    """Plays a defeat sound using a descending series of beeps."""
+    winsound.Beep(800, 300)   # Low-pitched beep
+    winsound.Beep(600, 300)   # Lower-pitched beep
+    winsound.Beep(400, 300)   # Even lower-pitched beep
+
+def play_timer_ticking_sound(duration=5):
+    """
+    Plays a ticking sound for a specified duration.
+    Each tick is a short beep separated by a small pause.
+    :param duration: Time in seconds for which the ticking sound should play.
+    """
+    end_time = time.time() + duration
+    while time.time() < end_time:
+        winsound.Beep(1000, 100)  # 1 kHz beep lasting 100ms
+        time.sleep(0.9)
 
 #scramble code (Returns Scrambled)
 
@@ -110,11 +135,22 @@ def display_timer(screen, font, time_left, elapsed_time):
     screen.blit(timer_text, timer_rect)
     return time_left
 
+#Game over Function
+def game_over(screen,score):
+    font = pygame.font.Font("DJB Chalk It Up.ttf", 80)
+    screen.blit(scaled_background, (0,0))
+    over_text = font.render(f"Game Over ! Final Score: {score}", True,(255,255,255) )
+    over_rect = over_text.get_rect(center = (640,300))
+    screen.blit(over_text, over_rect)
+    pygame.display.flip()
+    pygame.title.delay(5000)
 
 #game Loop
 running = True
 
 while running:
+    elapsed_time = (pygame.title.get_ticks() - start_ticks) / 1000
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -129,7 +165,6 @@ while running:
                     scrambled_word = scramble_word(word_to_guess)
                     user_input = ""
                     hint_used = False
-
                 else:
                     score -= 1 # Penalize for wrong guess
             elif event.key == pygame.K_BACKSPACE:
@@ -179,6 +214,9 @@ while running:
     screen.blit(pause_button, (1161, 609))
     scrambled_text = font.render(f"{scrambled_word}", True, (255, 255, 255))
     screen.blit(scrambled_text, (100, 200))
+    user_input_text = font.render(f"Your Guess: {user_input}", True, (255, 255, 255))
+    screen.blit(user_input_text, (100, 300))
+    display_score(screen, font, score)
 
     # Draw the scaled background
     screen.blit(scaled_background, (0, 0))
