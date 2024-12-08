@@ -64,7 +64,7 @@ def display_timer(screen, font, start_time, elapsed_time):
     screen.blit(timer_text, timer_rect)
     return time_left
 
-# Display Score
+# Display Scorew
 def display_score(screen, font, score):
     score_text = font.render(f"Score: {score}", True, (255, 255, 0))
     screen.blit(score_text, (1000, 40))

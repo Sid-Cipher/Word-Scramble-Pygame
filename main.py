@@ -52,6 +52,15 @@ user_input = ""
 #Functions to Code
 
 #scramble code (Returns Scrambled)
+
+def scrambled_word_underscore(word):
+    word_count = len(word)
+    underscore_string = ""
+    for i in range(word_count):
+        underscore_string.append("_ ")
+
+
+
 def scramble_word(word):
     word_list = list(word)  # Convert the word to a list of characters.
     random.shuffle(word_list)  # Shuffle the characters randomly.
@@ -73,45 +82,32 @@ def pause():
         screen.blit(pause_menu, (0, 0))
         pygame.display.flip
 
-def hint(screen):
+def display_hint(screen,word_to_guess):
     pass
     # Drawing the hint button on screen
 
-def score(screen, font):
-
+def display_score(screen, font, score):
     # Drawing the score button on screen
-
     font_size = 70
     font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
-
-    #Score function yet to be created !!
-    pass
+    score_text = font.render(f"Score: {score}", True, (255,255,255))
+    screen.blit(score_text, (29,40))
 
 #timer_function
 def display_timer(screen, font, time_left, elapsed_time):
 
    #Drawing a timer on the screen
-
     font_size = 98
     font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
-
     time_left = max(0, start_time - elapsed_time)  # Ensure it doesn't go negative
-
     # Change color based on time
-    if time_left > 10:
-        color = (255, 255, 255)  # White
-    else:
-        color = (255, 0, 0)  # Red
-
-    # Render the timer text
+    color = (255,255,255) if time_left > 10 else (255,0,0,)
+    # Render the timer tex
     timer_text = font.render(f"{int(time_left)}", True, color)
-
     # Get the text's rectangle and center it on the screen
     timer_rect = timer_text.get_rect(center=(1137, 40))  # Adjust position as needed
-
     # Draw the text on the screen
     screen.blit(timer_text, timer_rect)
-
     return time_left
 
 
@@ -122,7 +118,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
         # Capture user input through the keyboard
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:  # Check if the user presses Enter
@@ -170,7 +165,11 @@ while running:
     clock.tick(30)  # 30 FPS
 
 
-
+    #Drawing the textures
+    screen.blit(hint_button,(28, 578))
+    screen.blit(pause_button, (1161, 609))
+    scrambled_text = font.render(f"{scrambled_word}", True, (255, 255, 255))
+    screen.blit(scrambled_text, (100, 200))
 
     # Draw the scaled background
     screen.blit(scaled_background, (0, 0))
