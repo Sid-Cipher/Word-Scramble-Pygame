@@ -83,14 +83,12 @@ hint_used = False
 #Functions to Code
 
 #Sound effects and Music(yet to be added)
-def play_win_sound():
-    """Plays a victory sound using a series of beeps."""
+"""def play_win_sound():
     winsound.Beep(1200, 1200)  # High-pitched beep
     winsound.Beep(1500, 1000)  # Higher-pitched beep
     winsound.Beep(1800, 1300)  # Even higher-pitched beep
 
 def play_lost_sound():
-    """Plays a defeat sound using a descending series of beeps."""
     winsound.Beep(800, 1300)   # Low-pitched beep
     winsound.Beep(600, 1200)   # Lower-pitched beep
     winsound.Beep(400, 1000)   # Even lower-pitched beep
@@ -99,24 +97,20 @@ def play_timer_ticking_sound(duration=5):
     end_time = time.time() + duration
     while time.time() < end_time:
         winsound.Beep(1000, 100)  # 1 kHz beep lasting 100ms
-        time.sleep(0.9)
+        time.sleep(0.9)"""
 
 #scramble code (Returns Scrambled)
-def scrambled_word_underscore(word):
+"""def scrambled_word_underscore(word):
     word_count = len(word)
     underscore_string = ""
     for i in range(word_count):
         underscore_string.append("_ ")
-    return underscore_string
+    return underscore_string"""
 
 def scramble_word(word):
-    word_list = list(word)  # Convert the word to a list of characters.
-    random.shuffle(word_list)  # Shuffle the characters randomly.
-    scrambled = ''.join(word_list)  # Join the shuffled characters back into a string.
-    # Ensure the scrambled word isn't the same as the original.
+    scrambled = ''.join(random.sample(word, len(word)))
     while scrambled == word:
-        random.shuffle(word_list)
-        scrambled = ''.join(word_list)
+        scrambled = ''.join(random.sample(word, len(word)))
     return scrambled
 
 def pause():
@@ -156,10 +150,10 @@ def display_timer(screen , start_time, elapsed_time):
     timer_rect = timer_text.get_rect(center=(1137, 40))  # Adjust position as needed
     # Draw the text on the screen
     screen.blit(timer_text, timer_rect)
-    return time_left
+    return time_left_timer
 
 #Game over Function
-def game_over(screen,score,font):
+def game_over(screen,score):
     font = pygame.font.Font("DJB Chalk It Up.ttf", 80)
     screen.blit(scaled_background, (0,0))
     over_text = font.render(f"Game Over ! Final Score: {score}", True,(255,255,255) )
@@ -170,7 +164,6 @@ def game_over(screen,score,font):
 
 #game Loop
 running = True
-
 while running:
     elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000
 
@@ -215,7 +208,7 @@ while running:
     # Clear the screen and draw the background
 
     # Call the timer function
-    time_left = display_timer(screen, font, start_time, elapsed_time)
+    time_left = display_timer(screen, start_time, elapsed_time)
 
     #If hint used
     if hint_used:
@@ -227,8 +220,7 @@ while running:
         game_over(screen, score)
         print("Time's up!")  #prints in console
 
-    # Update the display
-    pygame.display.flip()
+
 
     # Cap the frame rate
     clock.tick(30)  # 30 FPS
@@ -241,7 +233,7 @@ while running:
     screen.blit(scrambled_text, (100, 200))
     user_input_text = font.render(f"Your Guess: {user_input}", True, (255, 255, 255))
     screen.blit(user_input_text, (100, 300))
-    display_score(screen, font, score)
+    display_score(screen,score)
 
     # Draw the scaled background
     #screen.blit(scaled_background, (0, 0))
