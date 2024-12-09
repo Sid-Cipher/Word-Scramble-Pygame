@@ -120,14 +120,16 @@ def pause():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     paused = False
-        #Volume button and Restart button should be added here if was added
         screen.blit(pause_menu, (0, 0))
         pygame.display.flip()
-        pygame.time.delay(5000)
+        clock.tick(30)  # Limit the frame rate during pause
 
-def display_hint(screen,word_to_guess):
-    pass
-    # Drawing the hint button on screen
+
+
+def display_hint(screen, word_to_guess):
+    hint_letter = random.choice(word_to_guess)
+    hint_text = font.render(f"Hint: Includes '{hint_letter}'", True, (255, 255, 255))
+    screen.blit(hint_text, (100, 400))  # Adjust position as needed
 
 def display_score(screen, score):
     # Drawing the score button on screen
@@ -153,14 +155,15 @@ def display_timer(screen , start_time, elapsed_time):
     return time_left_timer
 
 #Game over Function
-def game_over(screen,score):
+def game_over(screen, score):
     font = pygame.font.Font("DJB Chalk It Up.ttf", 80)
-    screen.blit(scaled_background, (0,0))
-    over_text = font.render(f"Game Over ! Final Score: {score}", True,(255,255,255) )
-    over_rect = over_text.get_rect(center = (640,300))
+    screen.blit(scaled_background, (0, 0))
+    over_text = font.render(f"Game Over! Final Score: {score}", True, (255, 255, 255))
+    over_rect = over_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
     screen.blit(over_text, over_rect)
     pygame.display.flip()
-    pygame.time.delay(5000)
+    pygame.time.delay(5000)  # Show for 3 seconds before closing
+
 
 #game Loop
 running = True
@@ -189,6 +192,7 @@ while running:
                 pause()
             elif event.key == pygame.K_QUESTION:
                 hint_used = True
+                display_hint(screen, word_to_guess)
             else:
                 user_input += event.unicode  # Add the typed character to user input
 
@@ -197,8 +201,8 @@ while running:
     screen.blit(hint_button, (28, 578))
     screen.blit(pause_button, (1161,609))
     # Draw the scrambled word on the screen
-    scrambled_text = font.render(f"Scrambled: {scramble_word}", True, (255, 255, 255))
-    screen.blit(scrambled_text, (100, 200))  # Adjust position as needed
+    scrambled_text = font.render(f"Scrambled: {scrambled_word}", True, (255, 255, 255))
+    screen.blit(scrambled_text, (500, 200))  # Adjust position as needed
     # Draw user input on the screen
     user_input_text = font.render(f"Your Guess: {user_input}", True, (255, 255, 255))
     screen.blit(user_input_text, (100, 300))  # Adjust position as needed
@@ -229,7 +233,7 @@ while running:
     #Drawing the textures
     screen.blit(hint_button,(28, 578))
     screen.blit(pause_button, (1161, 609))
-    scrambled_text = font.render(f"{scrambled_word}", True, (255, 255, 255))
+    scrambled_text = font.render(f"Scrambled Word{scrambled_word}", True, (255, 255, 255))
     screen.blit(scrambled_text, (100, 200))
     user_input_text = font.render(f"Your Guess: {user_input}", True, (255, 255, 255))
     screen.blit(user_input_text, (100, 300))
