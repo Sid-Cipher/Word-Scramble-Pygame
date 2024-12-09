@@ -170,7 +170,7 @@ while running:
             elif event.key == pygame.K_BACKSPACE:
                 user_input = user_input[:-1]  # Remove the last character
             elif event.key == pygame.K_QUESTION:
-                pause_game()
+                pause()
             elif event.key == pygame.K_QUESTION:
                 hint_used = True
             else:
