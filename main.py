@@ -29,7 +29,10 @@ scaled_background = pygame.transform.scale(background, (1280, 720))
 
 #Loading the custom font (#Been here for future references) (Delete during final product demo)
 font_size = 40
-font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
+try:
+    font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
+except FileNotFoundError:
+    font = pygame.font.SysFont(None, font_size)
 
 # Timer 🕛
 start_time = 30  # Start with 30 seconds
@@ -156,7 +159,7 @@ def display_timer(screen , start_time, elapsed_time):
     return time_left
 
 #Game over Function
-def game_over(screen,score):
+def game_over(screen,score,font):
     font = pygame.font.Font("DJB Chalk It Up.ttf", 80)
     screen.blit(scaled_background, (0,0))
     over_text = font.render(f"Game Over ! Final Score: {score}", True,(255,255,255) )
