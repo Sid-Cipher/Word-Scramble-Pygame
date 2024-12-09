@@ -40,51 +40,71 @@ start_ticks = pygame.time.get_ticks()  # Record the starting tick (in millisecon
 # Score system
 score = 1647
 
-# Word levels
+# Words
+easy_words = [
+    "cat", "dog", "sun", "bag", "rat", "bat", "pen", "cup", "man", "fan",
+    "box", "car", "bed", "red", "top", "zip", "map", "pot", "cap", "log",
+    "mat", "run", "net", "pin", "cut", "nap", "egg", "hit", "toy", "jam",
+    "sit", "win", "lip", "fix", "kit", "tap", "hat", "pan", "tip", "mix",
+    "ball", "tree", "star", "cake", "moon", "ship", "frog", "door", "gold",
+    "fish", "book", "card", "bird", "fire", "lamp", "rock", "wind", "pear",
+    "shoe", "coat", "seed", "ring", "time", "milk", "coin", "sand", "note",
+    "hill", "leaf", "song", "desk", "rain", "wolf", "bear"
+]
+medium_words = [
+    "apple", "baker", "candy", "dance", "eagle", "fruit", "grape", "house", "ideal",
+    "jolly", "knock", "light", "magic", "noble", "ocean", "piano", "queen", "river",
+    "spice", "table", "unity", "value", "wheat", "xenon", "yacht", "zebra", "angel",
+    "blaze", "climb", "dream", "flame", "ghost", "heart", "island", "joker", "karma",
+    "lunch", "mocha", "nurse", "orbit", "pride", "quiet", "realm", "sugar", "toast",
+    "urban", "vivid", "water", "xerox", "yield", "zesty"
+]
+hard_words = [
+    "ancient", "balloon", "captain", "diamond", "enclave", "fantasy", "gateway",
+    "harmony", "insight", "journey", "kingdom", "lantern", "measure", "natural",
+    "octopus", "picture", "quality", "rescue", "station", "thought", "unicorn",
+    "victory", "welcome", "zealous", "admiral", "boulder", "crystal", "destiny",
+    "freedom", "gallery", "history", "iceberg", "justice", "library", "mystery",
+    "network", "opinion", "pattern", "rebuild", "sunrise", "tandem", "umbrella",
+    "vulture", "whistle", "zealot", "aspiring", "bravery", "ceremony", "daydream"
+]
 
-easy_words = ["cat", "dog", "bat"]
-medium_words = ["apple", "grape", "house"]
-hard_words = ["elephant", "umbrella", "happiness"]
+#Word Levels
 current_level = "easy"
 words = {"easy": easy_words, "medium": medium_words, "hard": hard_words}
 word_to_guess = random.choice(words[current_level])
+scrambled_word = ''.join(random.sample(word_to_guess, len(word_to_guess)))
 user_input = ""
+hint_used = False
 
 #Functions to Code
 
 #Sound effects and Music(yet to be added)
 def play_win_sound():
     """Plays a victory sound using a series of beeps."""
-    winsound.Beep(1200, 300)  # High-pitched beep
-    winsound.Beep(1500, 300)  # Higher-pitched beep
-    winsound.Beep(1800, 300)  # Even higher-pitched beep
+    winsound.Beep(1200, 1200)  # High-pitched beep
+    winsound.Beep(1500, 1000)  # Higher-pitched beep
+    winsound.Beep(1800, 1300)  # Even higher-pitched beep
 
 def play_lost_sound():
     """Plays a defeat sound using a descending series of beeps."""
-    winsound.Beep(800, 300)   # Low-pitched beep
-    winsound.Beep(600, 300)   # Lower-pitched beep
-    winsound.Beep(400, 300)   # Even lower-pitched beep
+    winsound.Beep(800, 1300)   # Low-pitched beep
+    winsound.Beep(600, 1200)   # Lower-pitched beep
+    winsound.Beep(400, 1000)   # Even lower-pitched beep
 
 def play_timer_ticking_sound(duration=5):
-    """
-    Plays a ticking sound for a specified duration.
-    Each tick is a short beep separated by a small pause.
-    :param duration: Time in seconds for which the ticking sound should play.
-    """
     end_time = time.time() + duration
     while time.time() < end_time:
         winsound.Beep(1000, 100)  # 1 kHz beep lasting 100ms
         time.sleep(0.9)
 
 #scramble code (Returns Scrambled)
-
 def scrambled_word_underscore(word):
     word_count = len(word)
     underscore_string = ""
     for i in range(word_count):
         underscore_string.append("_ ")
-
-
+    return underscore_string
 
 def scramble_word(word):
     word_list = list(word)  # Convert the word to a list of characters.
@@ -105,30 +125,30 @@ def pause():
                     paused = False
         #Volume button and Restart button should be added here if was added
         screen.blit(pause_menu, (0, 0))
-        pygame.display.flip
+        pygame.display.flip()
+        pygame.time.delay(5000)
 
 def display_hint(screen,word_to_guess):
     pass
     # Drawing the hint button on screen
 
-def display_score(screen, font, score):
+def display_score(screen, score):
     # Drawing the score button on screen
-    font_size = 70
-    font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
-    score_text = font.render(f"Score: {score}", True, (255,255,255))
+    font_size_score = 70
+    font_score = pygame.font.Font("DJB Chalk It Up.ttf", font_size_score)
+    score_text = font_score.render(f"Score: {score}", True, (255,255,255))
     screen.blit(score_text, (29,40))
 
 #timer_function
-def display_timer(screen, font, time_left, elapsed_time):
-
+def display_timer(screen , start_time, elapsed_time):
    #Drawing a timer on the screen
-    font_size = 98
-    font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
-    time_left = max(0, start_time - elapsed_time)  # Ensure it doesn't go negative
+    font_size_timer = 98
+    font_timer = pygame.font.Font("DJB Chalk It Up.ttf", font_size_timer)
+    time_left_timer = max(0, start_time - elapsed_time)  # Ensure it doesn't go negative
     # Change color based on time
-    color = (255,255,255) if time_left > 10 else (255,0,0,)
+    color = (255,255,255) if time_left_timer > 10 else (255,0,0,)
     # Render the timer tex
-    timer_text = font.render(f"{int(time_left)}", True, color)
+    timer_text = font_timer.render(f"{int(time_left_timer)}", True, color)
     # Get the text's rectangle and center it on the screen
     timer_rect = timer_text.get_rect(center=(1137, 40))  # Adjust position as needed
     # Draw the text on the screen
@@ -143,13 +163,13 @@ def game_over(screen,score):
     over_rect = over_text.get_rect(center = (640,300))
     screen.blit(over_text, over_rect)
     pygame.display.flip()
-    pygame.title.delay(5000)
+    pygame.time.delay(5000)
 
 #game Loop
 running = True
 
 while running:
-    elapsed_time = (pygame.title.get_ticks() - start_ticks) / 1000
+    elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -169,7 +189,7 @@ while running:
                     score -= 1 # Penalize for wrong guess
             elif event.key == pygame.K_BACKSPACE:
                 user_input = user_input[:-1]  # Remove the last character
-            elif event.key == pygame.K_QUESTION:
+            elif event.key == pygame.K_ESCAPE:
                 pause()
             elif event.key == pygame.K_QUESTION:
                 hint_used = True
@@ -219,7 +239,7 @@ while running:
     display_score(screen, font, score)
 
     # Draw the scaled background
-    screen.blit(scaled_background, (0, 0))
+    #screen.blit(scaled_background, (0, 0))
 
     # Update the display
     pygame.display.flip()
