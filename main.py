@@ -196,6 +196,7 @@ while running:
             else:
                 user_input += event.unicode  # Add the typed character to user input
 
+    screen.blit(scaled_background, (0, 0))
     #Draw the hint button and pause button
     screen.blit(hint_button, (28, 578))
     screen.blit(pause_button, (1161,609))
@@ -209,7 +210,7 @@ while running:
     current_ticks = pygame.time.get_ticks()
     elapsed_time = (current_ticks - start_ticks) / 1000  # Convert milliseconds to seconds
     # Clear the screen and draw the background
-    screen.blit(scaled_background, (0, 0))
+
     # Call the timer function
     time_left = display_timer(screen, font, start_time, elapsed_time)
 
@@ -220,6 +221,7 @@ while running:
     # End the game when the timer reaches zero
     if time_left <= 0:
         running = False
+        game_over(screen, score)
         print("Time's up!")  #prints in console
 
     # Update the display
