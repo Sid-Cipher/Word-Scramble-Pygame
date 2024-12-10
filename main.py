@@ -136,8 +136,8 @@ def scramble_word(word):
     return scrambled
 
 def pause():
-    global elapsed_time
-    global time_left
+    global timer_paused
+    timer_paused = True
     paused = True
     while paused:
         for event in pygame.event.get():
@@ -145,8 +145,7 @@ def pause():
                 if event.key == pygame.K_ESCAPE:
                     sound_effect_play("unpause_sound")
                     paused = False
-        elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000
-        time_left = display_timer(screen, start_time, elapsed_time)
+                    timer_paused = False
         screen.blit(pause_menu, (0, 0))
         pygame.display.flip()
         clock.tick(30)  # Limit the frame rate during pause
@@ -215,8 +214,11 @@ def game_over(screen, score):
 
 #game Loop
 running = True
+timer_paused = False
+
 while running:
-    elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000
+    if not timer_paused:
+        elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
