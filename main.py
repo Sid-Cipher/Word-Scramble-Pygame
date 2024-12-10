@@ -50,7 +50,7 @@ WIDTH, HEIGHT = 1280,720 # Been placed here only for future references of width 
 scaled_background = pygame.transform.scale(background, (1280, 720))
 
 #Loading the custom font (#Been here for future references) (Delete during final product demo)
-font_size = 72
+font_size = 80
 try:
     font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
 except FileNotFoundError:
@@ -284,12 +284,13 @@ while running:
     # Screen width (assuming a window of 1280, modify as per your screen width)
     screen_width = 1280
     x_pos = 147
-    y_pos = 226
+    y_pos = 240
     spacing_scrambled = 36  # Adjust this value to control space between words
 
     x_pos_un = 376
     y_pos_un = 445
     spacing_unscrambled = 18  # Adjust this value to control space between words
+
 
 
     # Function to calculate the total width of the text
