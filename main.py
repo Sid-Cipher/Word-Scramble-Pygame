@@ -15,16 +15,18 @@ pygame.mixer.music.play(-1)  # Play indefinitely
 #Loading sound effects
 win_sound = pygame.mixer.Sound("correct_ans.wav")
 lose_sound = pygame.mixer.Sound("lost_sound_effect.mp3")
-hint_sound = pygame.mixer.Sound("hint")
+hint_sound = pygame.mixer.Sound("hint.wav")
 pause_sound = pygame.mixer.Sound("pause.mp3")
 unpause_sound = pygame.mixer.Sound("unpause.mp3")
+score_sound = pygame.mixer.Sound("Score_card.wav")
 
 # Adjust volumes for sound effects
-win_sound.set_volume(0.7)
-lose_sound.set_volume(0.7)
+win_sound.set_volume(0.5)
+lose_sound.set_volume(0.5)
 hint_sound.set_volume(0.5)
 pause_sound.set_volume(0.5)
 unpause_sound.set_volume(0.5)
+score_sound.set_volume(0.5)
 
 #Display Screen Width
 screen = pygame.display.set_mode((1280,720))
@@ -139,6 +141,7 @@ def pause():
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    pygame.mixer.Sound.play(unpause_sound)
                     paused = False
         screen.blit(pause_menu, (0, 0))
         pygame.display.flip()
@@ -205,12 +208,15 @@ while running:
                     user_input = ""
                     hint_used = False
                 else:
+                    pygame.mixer.Sound.play(lose_sound)
                     score -= 1 # Penalize for wrong guess
             elif event.key == pygame.K_BACKSPACE:
                 user_input = user_input[:-1]  # Remove the last character
             elif event.key == pygame.K_ESCAPE:
+                pygame.mixer.Sound.play(pause_sound)
                 pause()
             elif event.unicode == '?':
+                pygame.mixer.Sound.play(hint_sound)
                 hint_used = True
                 display_hint(screen,word_to_guess)
             else:
@@ -238,6 +244,7 @@ while running:
     # End the game when the timer reaches zero
     if time_left <= 0:
         running = False
+        pygame.mixer.Sound.play(score_sound)
         game_over(screen, score)
         print("Time's up!")  #prints in console
 
