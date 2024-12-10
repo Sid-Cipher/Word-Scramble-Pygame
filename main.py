@@ -57,7 +57,7 @@ except FileNotFoundError:
     font = pygame.font.SysFont(None, font_size)
 
 # Timer 🕛
-start_time = 30  # Start with 30 seconds
+start_time = 31  # Start with 30 seconds
 time_left = start_time
 clock = pygame.time.Clock()
 start_ticks = pygame.time.get_ticks()  # Record the starting tick (in milliseconds)
@@ -136,16 +136,20 @@ def scramble_word(word):
     return scrambled
 
 def pause():
-    global timer_paused
+    global timer_paused, start_ticks
     timer_paused = True
+    paused_start_ticks = pygame.time.get_ticks()  # Record the time when paused
     paused = True
     while paused:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_ESCAPE:  # Unpause on ESC
                     sound_effect_play("unpause_sound")
                     paused = False
                     timer_paused = False
+                    # Adjust start_ticks to compensate for paused time
+                    paused_duration = pygame.time.get_ticks() - paused_start_ticks
+                    start_ticks += paused_duration
         screen.blit(pause_menu, (0, 0))
         pygame.display.flip()
         clock.tick(30)  # Limit the frame rate during pause
@@ -218,7 +222,10 @@ timer_paused = False
 
 while running:
     if not timer_paused:
-        elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000
+        elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000  # Time in seconds
+    else:
+        start_ticks = pygame.time.get_ticks()
+        elapsed_time = 0
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
