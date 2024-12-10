@@ -136,6 +136,8 @@ def scramble_word(word):
     return scrambled
 
 def pause():
+    global elapsed_time
+    global time_left
     paused = True
     while paused:
         for event in pygame.event.get():
@@ -143,6 +145,8 @@ def pause():
                 if event.key == pygame.K_ESCAPE:
                     sound_effect_play("unpause_sound")
                     paused = False
+        elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000
+        time_left = display_timer(screen, start_time, elapsed_time)
         screen.blit(pause_menu, (0, 0))
         pygame.display.flip()
         clock.tick(30)  # Limit the frame rate during pause
@@ -169,9 +173,6 @@ def sound_effect_play(effect):
             pygame.mixer.Sound.play(lose_sound)
     except pygame.error as e:
         print(f"Error loading music file. Exception: {e}")
-
-
-
 
 def display_hint(screen, word_to_guess):
     hint_letter = random.choice(word_to_guess)
@@ -225,6 +226,7 @@ while running:
             if event.key == pygame.K_RETURN:  # Check if the user presses Enter
                 # Check if the guessed word is correct
                 if user_input.lower() == word_to_guess.lower():
+                    start_ticks = pygame.time.get_ticks()
                     score += 10 if not hint_used else 5
                     current_level = 'medium' if score > 30 else "hard" if score > 60 else "easy"
                     word_to_guess = random.choice(words[current_level])
@@ -264,7 +266,6 @@ while running:
     # Call the timer function
     time_left = display_timer(screen, start_time, elapsed_time)
 
-
     # End the game when the timer reaches zero
     if time_left <= 0:
         running = False
@@ -272,11 +273,8 @@ while running:
         game_over(screen, score)
         print("Time's up!")  #prints in console
 
-
-
     # Cap the frame rate
     clock.tick(30)  # 30 FPS
-
 
     #Drawing the textures
     screen.blit(hint_button,(28, 578))

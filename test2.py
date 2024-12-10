@@ -1,107 +1,116 @@
+# Importing necessary libraries
 import pygame
+import random
+import time
 
-# Fixes and improvements for the provided Word Scramble game.
-
-# Initialize Pygame and screen
+# Initializing pygame
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+
+# Screen dimensions
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Word Scramble Game")
 
-# Asset Paths (use placeholders if assets aren't available)
-background_image_path = "/mnt/data/background.png"
-hint_button_image_path = "/mnt/data/hint_button.png"
-pause_button_image_path = "/mnt/data/pause_button.png"
-background_music_path = "/mnt/data/background_music.mp3"
-hint_sound_path = "/mnt/data/hint_sound.mp3"
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
 
-# Colors and Fonts
-white = (255, 255, 255)
-black = (0, 0, 0)
-font = pygame.font.Font(None, 36)
+# Fonts
+font_large = pygame.font.Font(None, 74)
+font_small = pygame.font.Font(None, 36)
 
-# Load and Handle Missing Assets
-def safe_load_image(path, fallback_color=(200, 200, 200)):
-    try:
-        return pygame.image.load(path).convert_alpha()
-    except pygame.error:
-        return pygame.Surface((100, 50)).fill(fallback_color)
-
-def safe_load_sound(path):
-    try:
-        return pygame.mixer.Sound(path)
-    except pygame.error:
-        return None
-
-background_image = safe_load_image(background_image_path)
-hint_button_image = safe_load_image(hint_button_image_path)
-pause_button_image = safe_load_image(pause_button_image_path)
-hint_sound = safe_load_sound(hint_sound_path)
-
-# Placeholder music loading
-try:
-    pygame.mixer.music.load(background_music_path)
-except pygame.error:
-    pass  # Skip if music isn't available
-
-# Helper to draw centered text
-def draw_text_centered(surface, text, font, color, x, y):
-    text_surface = font.render(text, True, color)
-    text_rect = text_surface.get_rect(center=(x, y))
-    surface.blit(text_surface, text_rect)
-
-# Game Variables
+# Game clock
 clock = pygame.time.Clock()
+FPS = 30
+
+# Word bank and levels
+word_bank = {
+    1: ["cat", "dog", "bat", "rat", "hat"],
+    2: ["apple", "grape", "peach", "mango", "berry"],
+    3: ["python", "gaming", "jumble", "widget", "planet"]
+}
+
+# Global variables
+current_level = 1
+scrambled_word = ""
+original_word = ""
+user_input = ""
+start_time = 0
+timer_limit = 20
+
+
+def scramble_word(word):
+    """Scrambles the letters of a word."""
+    word = list(word)
+    random.shuffle(word)
+    return ''.join(word)
+
+
+def display_text(text, font, color, x, y, center=True):
+    """Displays text on the screen."""
+    render = font.render(text, True, color)
+    rect = render.get_rect()
+    if center:
+        rect.center = (x, y)
+    else:
+        rect.topleft = (x, y)
+    screen.blit(render, rect)
+
+
+def get_new_word(level):
+    """Fetches a new word and scrambles it."""
+    global scrambled_word, original_word, start_time
+    original_word = random.choice(word_bank[level])
+    scrambled_word = scramble_word(original_word)
+    start_time = time.time()
+
+
+# Initialize the first word
+get_new_word(current_level)
+
+# Main game loop
 running = True
-paused = False
-score = 0
-level = 1
-scrambled_word = "PYTHON"
-user_guess = ""
-start_ticks = pygame.time.get_ticks()
-
-# Main Game Loop
 while running:
-    screen.fill(black)
-    screen.blit(background_image, (0, 0))
+    screen.fill(WHITE)
+    elapsed_time = time.time() - start_time
+    remaining_time = max(0, int(timer_limit - elapsed_time))
 
-    # Check Events
+    # Event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                paused = not paused
-            elif event.key == pygame.K_BACKSPACE:
-                user_guess = user_guess[:-1]
-            elif event.key == pygame.K_RETURN and not paused:
-                if user_guess == "PYTHON":  # Correct word for testing
-                    score += 1
-                    level += 1
-                    scrambled_word = "WINNER"
-                user_guess = ""
+            if event.key == pygame.K_BACKSPACE:
+                user_input = user_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                if user_input.lower() == original_word:
+                    user_input = ""
+                    current_level += 1 if current_level < len(word_bank) else 0
+                    get_new_word(current_level)
+                else:
+                    user_input = ""
             else:
-                user_guess += event.unicode
+                user_input += event.unicode
 
-    # Game Logic
-    elapsed_seconds = (pygame.time.get_ticks() - start_ticks) // 1000
-    if paused:
-        pygame.mixer.music.pause()
-    else:
-        pygame.mixer.music.unpause()
+    # Check if time is up
+    if remaining_time == 0:
+        display_text("Time's up! Game Over!", font_large, RED, WIDTH // 2, HEIGHT // 2)
+        pygame.display.flip()
+        pygame.time.delay(2000)
+        running = False
+        continue
 
-    # Draw Game Elements
-    draw_text_centered(screen, f"Score: {score}", font, white, 400, 50)
-    draw_text_centered(screen, f"Level: {level}", font, white, 400, 100)
-    draw_text_centered(screen, scrambled_word, font, white, 400, 200)
-    draw_text_centered(screen, user_guess, font, white, 400, 300)
-    draw_text_centered(screen, f"Time: {elapsed_seconds}s", font, white, 400, 400)
+    # Display scrambled word, user input, level, and timer
+    display_text(f"Level: {current_level}", font_small, BLACK, 10, 10, center=False)
+    display_text(f"Time Left: {remaining_time}s", font_small, BLACK, WIDTH - 150, 10, center=False)
+    display_text(scrambled_word, font_large, BLACK, WIDTH // 2, HEIGHT // 3)
+    display_text(user_input, font_large, GREEN, WIDTH // 2, HEIGHT // 2)
 
-    # Draw Buttons
-    screen.blit(hint_button_image, (50, 500))
-    screen.blit(pause_button_image, (700, 500))
-
-    # Refresh Screen
+    # Update the screen
     pygame.display.flip()
-    clock.tick(30)
+    clock.tick(FPS)
 
+# Quit pygame
 pygame.quit()
