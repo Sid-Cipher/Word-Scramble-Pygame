@@ -5,6 +5,26 @@ import winsound
 
 #Initialziing the Pygame
 pygame.init()
+pygame.mixer.init()
+
+# Load and play music
+pygame.mixer.music.load("Lukrembo.mp3")
+pygame.mixer.music.set_volume(0.7)
+pygame.mixer.music.play(-1)  # Play indefinitely
+
+#Loading sound effects
+win_sound = pygame.mixer.Sound("correct_ans.wav")
+lose_sound = pygame.mixer.Sound("lost_sound_effect.mp3")
+hint_sound = pygame.mixer.Sound("hint")
+pause_sound = pygame.mixer.Sound("pause.mp3")
+unpause_sound = pygame.mixer.Sound("unpause.mp3")
+
+# Adjust volumes for sound effects
+win_sound.set_volume(0.7)
+lose_sound.set_volume(0.7)
+hint_sound.set_volume(0.5)
+pause_sound.set_volume(0.5)
+unpause_sound.set_volume(0.5)
 
 #Display Screen Width
 screen = pygame.display.set_mode((1280,720))
@@ -141,7 +161,7 @@ def display_score(screen, score):
 #timer_function
 def display_timer(screen , start_time, elapsed_time):
    #Drawing a timer on the screen
-    font_size_timer = 98
+    font_size_timer = 90
     font_timer = pygame.font.Font("DJB Chalk It Up.ttf", font_size_timer)
     time_left_timer = max(0, start_time - elapsed_time)  # Ensure it doesn't go negative
     # Change color based on time
@@ -149,7 +169,7 @@ def display_timer(screen , start_time, elapsed_time):
     # Render the timer tex
     timer_text = font_timer.render(f"{int(time_left_timer)}", True, color)
     # Get the text's rectangle and center it on the screen
-    timer_rect = timer_text.get_rect(center=(1137, 40))  # Adjust position as needed
+    timer_rect = timer_text.get_rect(center=(1137, 70))  # Adjust position as needed
     # Draw the text on the screen
     screen.blit(timer_text, timer_rect)
     return time_left_timer
@@ -190,9 +210,9 @@ while running:
                 user_input = user_input[:-1]  # Remove the last character
             elif event.key == pygame.K_ESCAPE:
                 pause()
-            elif event.key == pygame.K_QUESTION:
+            elif event.unicode == '?':
                 hint_used = True
-                display_hint(screen, word_to_guess)
+                display_hint(screen,word_to_guess)
             else:
                 user_input += event.unicode  # Add the typed character to user input
 
@@ -214,9 +234,6 @@ while running:
     # Call the timer function
     time_left = display_timer(screen, start_time, elapsed_time)
 
-    #If hint used
-    if hint_used:
-        display_hint(screen,font,word_to_guess)
 
     # End the game when the timer reaches zero
     if time_left <= 0:
@@ -244,6 +261,7 @@ while running:
 
     # Update the display
     pygame.display.flip()
+    pygame.mixer.music.stop()
 
 pygame.quit()
 
