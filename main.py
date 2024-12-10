@@ -141,11 +141,35 @@ def pause():
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    pygame.mixer.Sound.play(unpause_sound)
+                    sound_effect_play("unpause_sound")
                     paused = False
         screen.blit(pause_menu, (0, 0))
         pygame.display.flip()
         clock.tick(30)  # Limit the frame rate during pause
+
+def music_play():
+    try: # Load and play music
+        pygame.mixer.music.load("Lukrembo.mp3")
+        pygame.mixer.music.set_volume(0.02)
+        pygame.mixer.music.play(-1)  # Play indefinitely
+    except pygame.error as e:
+        print(f"Error loading music file. Exception: {e}")
+
+def sound_effect_play(effect):
+    try:
+        if effect == "hint_sound":
+            pygame.mixer.Sound.play(hint_sound)
+        elif effect == "pause_sound":
+            pygame.mixer.Sound.play(pause_sound)
+        elif effect == "unpause_sound":
+            pygame.mixer.Sound.play(unpause_sound)
+        elif effect == "score_sound":
+            pygame.mixer.Sound.play(score_sound)
+        elif effect == "lose_sound":
+            pygame.mixer.Sound.play(lose_sound)
+    except pygame.error as e:
+        print(f"Error loading music file. Exception: {e}")
+
 
 
 
@@ -208,15 +232,15 @@ while running:
                     user_input = ""
                     hint_used = False
                 else:
-                    pygame.mixer.Sound.play(lose_sound)
+                    sound_effect_play("lose_sound")
                     score -= 1 # Penalize for wrong guess
             elif event.key == pygame.K_BACKSPACE:
                 user_input = user_input[:-1]  # Remove the last character
             elif event.key == pygame.K_ESCAPE:
-                pygame.mixer.Sound.play(pause_sound)
+                sound_effect_play("pause_sound")
                 pause()
             elif event.unicode == '?':
-                pygame.mixer.Sound.play(hint_sound)
+                sound_effect_play("hint_sound")
                 hint_used = True
                 display_hint(screen,word_to_guess)
             else:
@@ -244,7 +268,7 @@ while running:
     # End the game when the timer reaches zero
     if time_left <= 0:
         running = False
-        pygame.mixer.Sound.play(score_sound)
+        sound_effect_play("score_sound")
         game_over(screen, score)
         print("Time's up!")  #prints in console
 
@@ -268,7 +292,7 @@ while running:
 
     # Update the display
     pygame.display.flip()
-    pygame.mixer.music.stop()
+
 
 pygame.quit()
 
