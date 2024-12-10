@@ -9,7 +9,7 @@ pygame.mixer.init()
 
 # Load and play music
 pygame.mixer.music.load("Lukrembo.mp3")
-pygame.mixer.music.set_volume(0.7)
+pygame.mixer.music.set_volume(0.1)
 pygame.mixer.music.play(-1)  # Play indefinitely
 
 #Loading sound effects
@@ -50,11 +50,17 @@ WIDTH, HEIGHT = 1280,720 # Been placed here only for future references of width 
 scaled_background = pygame.transform.scale(background, (1280, 720))
 
 #Loading the custom font (#Been here for future references) (Delete during final product demo)
-font_size = 40
+font_size = 72
 try:
     font = pygame.font.Font("DJB Chalk It Up.ttf", font_size)
 except FileNotFoundError:
     font = pygame.font.SysFont(None, font_size)
+
+font_size_scrambled = 65
+try:
+    font_scrambled = pygame.font.Font("DJB Chalk It Up.ttf", font_size_scrambled)
+except FileNotFoundError:
+    font_scrambled = pygame.font.SysFont(None, font_size_scrambled)
 
 # Timer 🕛
 start_time = 31  # Start with 30 seconds
@@ -63,7 +69,7 @@ clock = pygame.time.Clock()
 start_ticks = pygame.time.get_ticks()  # Record the starting tick (in milliseconds)
 
 # Score system
-score = 1647
+score = 0
 
 # Words
 easy_words = [
@@ -122,12 +128,12 @@ def play_timer_ticking_sound(duration=5):
         time.sleep(0.9)"""
 
 #scramble code (Returns Scrambled)
-"""def scrambled_word_underscore(word):
+def scrambled_word_underscore(word):
     word_count = len(word)
     underscore_string = ""
     for i in range(word_count):
         underscore_string.append("_ ")
-    return underscore_string"""
+    return underscore_string
 
 def scramble_word(word):
     scrambled = ''.join(random.sample(word, len(word)))
@@ -174,6 +180,8 @@ def sound_effect_play(effect):
             pygame.mixer.Sound.play(score_sound)
         elif effect == "lose_sound":
             pygame.mixer.Sound.play(lose_sound)
+        elif effect == "win_sound":
+            pygame.mixer.Sound.play(win_sound)
     except pygame.error as e:
         print(f"Error loading music file. Exception: {e}")
 
@@ -213,7 +221,7 @@ def game_over(screen, score):
     over_rect = over_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
     screen.blit(over_text, over_rect)
     pygame.display.flip()
-    pygame.time.delay(5000)  # Show for 3 seconds before closing
+    pygame.time.delay(5000)  # Show for 5 seconds before closing
 
 
 #game Loop
@@ -221,6 +229,7 @@ running = True
 timer_paused = False
 
 while running:
+
     if not timer_paused:
         elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000  # Time in seconds
     else:
@@ -236,15 +245,25 @@ while running:
                 # Check if the guessed word is correct
                 if user_input.lower() == word_to_guess.lower():
                     start_ticks = pygame.time.get_ticks()
-                    score += 10 if not hint_used else 5
-                    current_level = 'medium' if score > 30 else "hard" if score > 60 else "easy"
+                    sound_effect_play("win_sound")
+                    if current_level == 'easy':
+                        score += 10 if not hint_used else 5
+                    elif current_level == 'medium':
+                        score += 20 if not hint_used else 10
+                    elif current_level == "hard":
+                        score += 30 if not hint_used else 15
+                    current_level = 'medium' if score > 100 else "hard" if score > 300 else "easy"
+                    pygame.time.delay(500)
                     word_to_guess = random.choice(words[current_level])
                     scrambled_word = scramble_word(word_to_guess)
                     user_input = ""
                     hint_used = False
                 else:
                     sound_effect_play("lose_sound")
-                    score -= 1 # Penalize for wrong guess
+                    if score > 0:
+                        score -= 1 # Penalize for wrong guess
+                    else:
+                        score = 0
             elif event.key == pygame.K_BACKSPACE:
                 user_input = user_input[:-1]  # Remove the last character
             elif event.key == pygame.K_ESCAPE:
@@ -261,12 +280,61 @@ while running:
     #Draw the hint button and pause button
     screen.blit(hint_button, (28, 578))
     screen.blit(pause_button, (1161,609))
+
+    # Screen width (assuming a window of 1280, modify as per your screen width)
+    screen_width = 1280
+    x_pos = 147
+    y_pos = 226
+    spacing_scrambled = 36  # Adjust this value to control space between words
+
+    x_pos_un = 376
+    y_pos_un = 445
+    spacing_unscrambled = 18  # Adjust this value to control space between words
+
+
+    # Function to calculate the total width of the text
+    def calculate_total_text_width(words, font, spacing):
+        total_width = 0
+        for word in words:
+            word_text = font.render(word, True, (255, 255, 255))  # Render the word
+            total_width += word_text.get_width() + spacing
+        return total_width
+
+
+    # Calculate the total width of the words (for both user_input and scrambled_word)
+    total_user_input_width = calculate_total_text_width(user_input, font, spacing_scrambled)
+    total_scrambled_word_width = calculate_total_text_width(scrambled_word, font_scrambled, spacing_unscrambled)
+
+    # Calculate starting positions for centering
+    x_pos = (screen_width - total_user_input_width + spacing_scrambled) // 2
+    x_pos_un = (screen_width - total_scrambled_word_width + spacing_unscrambled) // 2
+
+    # Adjust vertical position for underscores (for example, 25 pixels below the words)
+    underscore_offset = 25  # Adjusted to 25px gap below the words
+
+    # Render and display the words centered with underscores
+    for word in user_input:
+        word_text = font.render(word, True, (255, 255, 255))  # White color text
+        screen.blit(word_text, (x_pos, y_pos))
+
+        # Render the underscore below the word
+        underscore_text = font.render("_" * len(word), True, (255, 255, 255))  # Underscores same length as word
+        screen.blit(underscore_text, (x_pos, y_pos + underscore_offset))  # Place it 25px below the word
+
+        x_pos += word_text.get_width() + spacing_scrambled
+
+    # Render scrambled words without underscores below them
+    for word in scrambled_word:
+        word_text = font_scrambled.render(word, True, (255, 255, 255))  # White color text
+        screen.blit(word_text, (x_pos_un, y_pos_un))
+
+        x_pos_un += word_text.get_width() + spacing_unscrambled
+
     # Draw the scrambled word on the screen
-    scrambled_text = font.render(f"Scrambled: {scrambled_word}", True, (255, 255, 255))
-    screen.blit(scrambled_text, (500, 200))  # Adjust position as needed
+
+      # Adjust position as needed
     # Draw user input on the screen
-    user_input_text = font.render(f"Your Guess: {user_input}", True, (255, 255, 255))
-    screen.blit(user_input_text, (100, 300))  # Adjust position as needed
+      # Adjust position as needed
     # Calculate elapsed time
     current_ticks = pygame.time.get_ticks()
     elapsed_time = (current_ticks - start_ticks) / 1000  # Convert milliseconds to seconds
@@ -288,10 +356,6 @@ while running:
     #Drawing the textures
     screen.blit(hint_button,(28, 578))
     screen.blit(pause_button, (1161, 609))
-    scrambled_text = font.render(f"Scrambled Word{scrambled_word}", True, (255, 255, 255))
-    screen.blit(scrambled_text, (100, 200))
-    user_input_text = font.render(f"Your Guess: {user_input}", True, (255, 255, 255))
-    screen.blit(user_input_text, (100, 300))
     display_score(screen,score)
 
     # Draw the scaled background
