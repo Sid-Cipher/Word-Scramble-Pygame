@@ -63,7 +63,7 @@ except FileNotFoundError:
     font_scrambled = pygame.font.SysFont(None, font_size_scrambled)
 
 # Timer 🕛
-start_time = 31  # Start with 30 seconds
+start_time = 61  # Start with 30 seconds
 time_left = start_time
 clock = pygame.time.Clock()
 start_ticks = pygame.time.get_ticks()  # Record the starting tick (in milliseconds)
@@ -80,16 +80,40 @@ easy_words = [
     "ball", "tree", "star", "cake", "moon", "ship", "frog", "door", "gold",
     "fish", "book", "card", "bird", "fire", "lamp", "rock", "wind", "pear",
     "shoe", "coat", "seed", "ring", "time", "milk", "coin", "sand", "note",
-    "hill", "leaf", "song", "desk", "rain", "wolf", "bear"
+    "hill", "leaf", "song", "desk", "rain", "wolf", "bear", "farm", "yard",
+    "bell", "jump", "kite", "nest", "pink", "quiz", "rope", "sock", "tale",
+    "vest", "wave", "twig", "duck", "clam", "sled", "barn", "tent", "drum",
+    "flag", "snow", "corn", "gate", "club", "bark", "tusk", "moss", "toad",
+    "reef", "dust", "peck", "glow", "dock", "veil", "plum", "hive", "slug",
+    "wing", "surf", "fern", "bell", "twig", "sand", "pest", "grid", "lace",
+    "mint", "pose", "disk", "clip", "bowl", "duck", "lamp", "grin", "peck",
+    "gown", "flap", "nest", "yarn", "fizz", "curl", "palm", "veil", "drip",
+    "bolt", "buzz", "snap", "twig", "whip", "mend", "flap", "dent", "grip",
+    "stir", "tent", "puff", "lamp", "dusk", "pane", "clay", "raft", "peel",
+    "blip", "crop", "glee", "snug", "cork", "luck", "nook", "snip", "twig",
+    "yolk", "ping", "drop", "gust", "loft", "fang", "bind", "plop"
 ]
+
 medium_words = [
     "apple", "baker", "candy", "dance", "eagle", "fruit", "grape", "house", "ideal",
     "jolly", "knock", "light", "magic", "noble", "ocean", "piano", "queen", "river",
     "spice", "table", "unity", "value", "wheat", "xenon", "yacht", "zebra", "angel",
     "blaze", "climb", "dream", "flame", "ghost", "heart", "island", "joker", "karma",
     "lunch", "mocha", "nurse", "orbit", "pride", "quiet", "realm", "sugar", "toast",
-    "urban", "vivid", "water", "xerox", "yield", "zesty"
+    "urban", "vivid", "water", "xerox", "yield", "zesty", "amber", "breeze", "charm",
+    "donkey", "elbow", "forest", "garden", "hammer", "inbox", "jungle", "kitten",
+    "laptop", "marble", "narrow", "orange", "pirate", "quaint", "rover", "secret",
+    "tangle", "uplift", "voyage", "wallet", "yellow", "zipper", "atomic", "butter",
+    "cactus", "dancer", "effort", "fisher", "gravel", "hollow", "jester", "ladder",
+    "mantle", "nectar", "outlet", "pepper", "quartz", "rocket", "safety", "temple",
+    "volume", "zipline", "bishop", "cattle", "desert", "fabric", "galaxy", "hiccup",
+    "juggle", "lyric", "medal", "notion", "oyster", "plunge", "quiver", "ribbon",
+    "shadow", "timber", "upland", "violet", "wizard", "zigzag", "basket", "canvas",
+    "danger", "effort", "fiddle", "gentle", "honest", "impact", "jigsaw", "kaboom",
+    "legend", "minnow", "nature", "openly", "parcel", "quasar", "remark", "signal",
+    "tinker", "uphill", "vortex", "whaler", "yonder"
 ]
+
 hard_words = [
     "ancient", "balloon", "captain", "diamond", "enclave", "fantasy", "gateway",
     "harmony", "insight", "journey", "kingdom", "lantern", "measure", "natural",
@@ -97,8 +121,20 @@ hard_words = [
     "victory", "welcome", "zealous", "admiral", "boulder", "crystal", "destiny",
     "freedom", "gallery", "history", "iceberg", "justice", "library", "mystery",
     "network", "opinion", "pattern", "rebuild", "sunrise", "tandem", "umbrella",
-    "vulture", "whistle", "zealot", "aspiring", "bravery", "ceremony", "daydream"
+    "vulture", "whistle", "zealot", "aspiring", "bravery", "ceremony", "daydream",
+    "eclipse", "flawless", "giraffe", "honesty", "infinity", "javelin", "kindred",
+    "lavender", "momentum", "novelist", "operator", "panorama", "quagmire", "refugee",
+    "silhouette", "trapeze", "undulate", "vanguard", "waterway", "xylophone", "yearning",
+    "zephyr", "airborne", "blueprint", "creature", "dominate", "exodus", "firestorm",
+    "guardrail", "hydrangea", "intrigue", "juggernaut", "labyrinth", "manifest",
+    "nostalgia", "observant", "platinum", "quicksand", "resilient", "symphony",
+    "tournament", "ultimatum", "vigilance", "whimsical", "zoologist", "artistry",
+    "boundary", "cascade", "diligent", "emphasis", "firebrand", "goldsmith", "hurricane",
+    "isolation", "juncture", "landscape", "masterful", "notorious", "overdrive",
+    "profound", "quarantine", "rhapsody", "strategy", "thunderous", "undeniable",
+    "vindicate", "windswept", "xenophile", "yearning"
 ]
+
 
 #Word Levels
 current_level = "easy"
@@ -109,23 +145,6 @@ user_input = ""
 hint_used = False
 
 #Functions to Code
-
-#Sound effects and Music(yet to be added)
-"""def play_win_sound():
-    winsound.Beep(1200, 1200)  # High-pitched beep
-    winsound.Beep(1500, 1000)  # Higher-pitched beep
-    winsound.Beep(1800, 1300)  # Even higher-pitched beep
-
-def play_lost_sound():
-    winsound.Beep(800, 1300)   # Low-pitched beep
-    winsound.Beep(600, 1200)   # Lower-pitched beep
-    winsound.Beep(400, 1000)   # Even lower-pitched beep
-
-def play_timer_ticking_sound(duration=5):
-    end_time = time.time() + duration
-    while time.time() < end_time:
-        winsound.Beep(1000, 100)  # 1 kHz beep lasting 100ms
-        time.sleep(0.9)"""
 
 #scramble code (Returns Scrambled)
 def scrambled_word_underscore(word):
@@ -185,11 +204,6 @@ def sound_effect_play(effect):
     except pygame.error as e:
         print(f"Error loading music file. Exception: {e}")
 
-def display_hint(screen, word_to_guess):
-    hint_letter = random.choice(word_to_guess)
-    hint_text = font.render(f"Hint: Includes '{hint_letter}'", True, (255, 255, 255))
-    screen.blit(hint_text, (100, 400))  # Adjust position as needed
-
 def display_score(screen, score):
     # Drawing the score button on screen
     font_size_score = 70
@@ -224,9 +238,30 @@ def game_over(screen, score):
     pygame.time.delay(5000)  # Show for 5 seconds before closing
 
 
+def render_word_with_feedback(screen, scrambled_word, user_input, font, x, y, spacing_unscrambled, word_to_guess):
+    scrambled_word = scrambled_word.upper()
+    user_input = user_input.upper()
+    word_to_guess = word_to_guess.upper()
+
+    for i, char in enumerate(scrambled_word):
+        # Check if the user's input character matches the correct position in word_to_guess
+        if i < len(user_input) and i < len(word_to_guess) and user_input[i] == word_to_guess[i]:
+            color = pygame.Color('green')  # Correct position
+        else:
+            color = pygame.Color('white')  # Default color for other cases
+
+        # Render the character
+        text_surface = font.render(char, True, color)
+        # Draw the character at the correct position
+        screen.blit(text_surface, (x, y))
+        # Increment x for the next character
+        x += text_surface.get_width() + spacing_unscrambled
+
+
 #game Loop
 running = True
 timer_paused = False
+show_hint = False
 
 while running:
 
@@ -246,6 +281,8 @@ while running:
                 if user_input.lower() == word_to_guess.lower():
                     start_ticks = pygame.time.get_ticks()
                     sound_effect_play("win_sound")
+                    if show_hint == True:
+                        show_hint = False
                     if current_level == 'easy':
                         score += 10 if not hint_used else 5
                     elif current_level == 'medium':
@@ -270,9 +307,9 @@ while running:
                 sound_effect_play("pause_sound")
                 pause()
             elif event.unicode == '?':
+                show_hint = True
                 sound_effect_play("hint_sound")
                 hint_used = True
-                display_hint(screen,word_to_guess)
             else:
                 user_input += event.unicode  # Add the typed character to user input
 
@@ -280,6 +317,22 @@ while running:
     #Draw the hint button and pause button
     screen.blit(hint_button, (28, 578))
     screen.blit(pause_button, (1161,609))
+
+    if show_hint == True:
+        if not word_to_guess:  # Check if the word_to_guess is empty
+            raise ValueError("word_to_guess cannot be empty")
+        # Get the first letter of the word
+        hint_letter = word_to_guess[0]
+        hint_letter = hint_letter.upper()
+        # Render the hint
+        font_size_hint = 50
+        try:
+            font_hint = pygame.font.Font("DJB Chalk It Up.ttf", font_size_hint)
+        except FileNotFoundError:
+            font_hint = pygame.font.SysFont(None, font_size_hint)
+        hint_text = font_hint.render(f"Hint: Starts with {hint_letter}", True, (255, 255, 255))
+        screen.blit(hint_text, (200, 615))
+
 
     # Screen width (assuming a window of 1280, modify as per your screen width)
     screen_width = 1280
@@ -315,6 +368,7 @@ while running:
 
     # Render and display the words centered with underscores
     for word in user_input:
+        word = word.upper()
         word_text = font.render(word, True, (255, 255, 255))  # White color text
         screen.blit(word_text, (x_pos, y_pos))
 
@@ -326,10 +380,8 @@ while running:
 
     # Render scrambled words without underscores below them
     for word in scrambled_word:
-        word_text = font_scrambled.render(word, True, (255, 255, 255))  # White color text
-        screen.blit(word_text, (x_pos_un, y_pos_un))
+        render_word_with_feedback(screen, scrambled_word, user_input, font, x_pos_un, y_pos_un, spacing_unscrambled,word_to_guess)
 
-        x_pos_un += word_text.get_width() + spacing_unscrambled
 
     # Draw the scrambled word on the screen
 

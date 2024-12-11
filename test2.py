@@ -1,15 +1,12 @@
-# Importing necessary libraries
 import pygame
 import random
-import time
 
-# Initializing pygame
+# Initialize Pygame
 pygame.init()
 
 # Screen dimensions
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Word Scramble Game")
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 
 # Colors
 WHITE = (255, 255, 255)
@@ -17,100 +14,72 @@ BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-# Fonts
-font_large = pygame.font.Font(None, 74)
-font_small = pygame.font.Font(None, 36)
+# Set up display
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Word Scrambling Game")
+font = pygame.font.Font(None, 48)
 
-# Game clock
-clock = pygame.time.Clock()
-FPS = 30
-
-# Word bank and levels
-word_bank = {
-    1: ["cat", "dog", "bat", "rat", "hat"],
-    2: ["apple", "grape", "peach", "mango", "berry"],
-    3: ["python", "gaming", "jumble", "widget", "planet"]
-}
-
-# Global variables
-current_level = 1
-scrambled_word = ""
-original_word = ""
-user_input = ""
-start_time = 0
-timer_limit = 20
-
+# List of words
+words = ["python", "keyboard", "monitor", "coding", "pygame"]
 
 def scramble_word(word):
-    """Scrambles the letters of a word."""
-    word = list(word)
-    random.shuffle(word)
-    return ''.join(word)
+    word_letters = list(word)
+    random.shuffle(word_letters)
+    return ''.join(word_letters)
 
+def display_message(text, color, y_offset=0):
+    message = font.render(text, True, color)
+    text_rect = message.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + y_offset))
+    screen.blit(message, text_rect)
 
-def display_text(text, font, color, x, y, center=True):
-    """Displays text on the screen."""
-    render = font.render(text, True, color)
-    rect = render.get_rect()
-    if center:
-        rect.center = (x, y)
-    else:
-        rect.topleft = (x, y)
-    screen.blit(render, rect)
+def game_loop():
+    running = True
+    word_to_guess = random.choice(words)
+    scrambled_word = scramble_word(word_to_guess)
+    user_guess = ""
+    hint_given = False
 
+    while running:
+        screen.fill(BLACK)
 
-def get_new_word(level):
-    """Fetches a new word and scrambles it."""
-    global scrambled_word, original_word, start_time
-    original_word = random.choice(word_bank[level])
-    scrambled_word = scramble_word(original_word)
-    start_time = time.time()
+        # Display the scrambled word
+        display_message(f"Scrambled: {scrambled_word}", WHITE, -50)
 
+        # Display the hint if given
+        if hint_given:
+            display_message(f"Hint: Starts with '{word_to_guess[0]}'", GREEN, 50)
 
-# Initialize the first word
-get_new_word(current_level)
+        # Display the user's current guess
+        display_message(f"Your Guess: {user_guess}", WHITE, 100)
 
-# Main game loop
-running = True
-while running:
-    screen.fill(WHITE)
-    elapsed_time = time.time() - start_time
-    remaining_time = max(0, int(timer_limit - elapsed_time))
-
-    # Event handling
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_BACKSPACE:
-                user_input = user_input[:-1]
-            elif event.key == pygame.K_RETURN:
-                if user_input.lower() == original_word:
-                    user_input = ""
-                    current_level += 1 if current_level < len(word_bank) else 0
-                    get_new_word(current_level)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    if user_guess.lower() == word_to_guess.lower():
+                        display_message("Correct! Press R to restart or Q to quit.", GREEN)
+                        pygame.display.update()
+                        pygame.time.wait(2000)
+                        return  # Exit the loop to restart or quit
+                    else:
+                        display_message("Wrong! Try again.", RED)
+                        pygame.display.update()
+                        pygame.time.wait(1000)
+                        user_guess = ""  # Reset the guess
+                elif event.key == pygame.K_BACKSPACE:
+                    user_guess = user_guess[:-1]
+                elif event.key == pygame.K_h:  # Press 'H' for hint
+                    hint_given = True
+                elif event.key == pygame.K_r:  # Press 'R' to restart
+                    game_loop()  # Restart the game
+                elif event.key == pygame.K_q:  # Press 'Q' to quit
+                    running = False
                 else:
-                    user_input = ""
-            else:
-                user_input += event.unicode
+                    user_guess += event.unicode
 
-    # Check if time is up
-    if remaining_time == 0:
-        display_text("Time's up! Game Over!", font_large, RED, WIDTH // 2, HEIGHT // 2)
-        pygame.display.flip()
-        pygame.time.delay(2000)
-        running = False
-        continue
+        pygame.display.update()
 
-    # Display scrambled word, user input, level, and timer
-    display_text(f"Level: {current_level}", font_small, BLACK, 10, 10, center=False)
-    display_text(f"Time Left: {remaining_time}s", font_small, BLACK, WIDTH - 150, 10, center=False)
-    display_text(scrambled_word, font_large, BLACK, WIDTH // 2, HEIGHT // 3)
-    display_text(user_input, font_large, GREEN, WIDTH // 2, HEIGHT // 2)
-
-    # Update the screen
-    pygame.display.flip()
-    clock.tick(FPS)
-
-# Quit pygame
+# Start the game
+game_loop()
 pygame.quit()
