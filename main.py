@@ -6,6 +6,7 @@ import winsound
 #Initialziing the Pygame
 pygame.init()
 pygame.mixer.init()
+ticking_sound = pygame.mixer.Sound("ticking.mp3")
 
 # Load and play music
 pygame.mixer.music.load("Lukrembo.mp3")
@@ -13,6 +14,7 @@ pygame.mixer.music.set_volume(0.1)
 pygame.mixer.music.play(-1)  # Play indefinitely
 
 #Loading sound effects
+ticking_sound = pygame.mixer.Sound("ticking.mp3")
 win_sound = pygame.mixer.Sound("correct_ans.wav")
 lose_sound = pygame.mixer.Sound("lost_sound_effect.mp3")
 hint_sound = pygame.mixer.Sound("hint.wav")
@@ -21,12 +23,13 @@ unpause_sound = pygame.mixer.Sound("unpause.mp3")
 score_sound = pygame.mixer.Sound("Score_card.wav")
 
 # Adjust volumes for sound effects
-win_sound.set_volume(0.5)
-lose_sound.set_volume(0.5)
-hint_sound.set_volume(0.5)
-pause_sound.set_volume(0.5)
-unpause_sound.set_volume(0.5)
-score_sound.set_volume(0.5)
+ticking_sound.set_volume(0.5)
+win_sound.set_volume(0.2)
+lose_sound.set_volume(0.2)
+hint_sound.set_volume(0.2)
+pause_sound.set_volume(0.2)
+unpause_sound.set_volume(0.2)
+score_sound.set_volume(0.2)
 
 #Display Screen Width
 screen = pygame.display.set_mode((1280,720))
@@ -36,11 +39,11 @@ pygame.display.set_caption("Word Scramble")
 icon = pygame.image.load('crossword.png')
 pygame.display.set_icon(icon)
 
-#Loading the Assets 😭 (crying in pressure)
+#Loading the Assets 😭 (crying in pain)
 hint_button = pygame.image.load("hint_button.png")
-hint_button = pygame.transform.scale(hint_button, (110, 132))
+hint_button = pygame.transform.scale(hint_button, (135, 132))
 pause_button = pygame.image.load("pause_button.png")
-pause_button = pygame.transform.scale(pause_button, (62, 70))
+pause_button = pygame.transform.scale(pause_button, (109, 123))
 pause_menu = pygame.image.load("Pause_menu.png")
 pause_menu = pygame.transform.scale(pause_menu,(1280,720))
 
@@ -63,7 +66,7 @@ except FileNotFoundError:
     font_scrambled = pygame.font.SysFont(None, font_size_scrambled)
 
 # Timer 🕛
-start_time = 61  # Start with 30 seconds
+start_time = 20  # Start with 30 seconds
 time_left = start_time
 clock = pygame.time.Clock()
 start_ticks = pygame.time.get_ticks()  # Record the starting tick (in milliseconds)
@@ -92,6 +95,20 @@ easy_words = [
     "stir", "tent", "puff", "lamp", "dusk", "pane", "clay", "raft", "peel",
     "blip", "crop", "glee", "snug", "cork", "luck", "nook", "snip", "twig",
     "yolk", "ping", "drop", "gust", "loft", "fang", "bind", "plop"
+    "arch", "bank", "beam", "bite", "blur", "boil", "boom", "bore", "brim", "bump",
+    "camp", "chop", "clap", "coil", "core", "crab", "crib", "curl", "damp", "dash",
+    "deer", "dive", "dome", "doom", "edit", "exit", "face", "fair", "fake", "farm",
+    "fizz", "foam", "fork", "gain", "gaze", "gear", "golf", "grow", "hail", "halt",
+    "hawk", "heap", "hero", "hide", "hold", "hush", "iron", "jazz", "jolt", "knee",
+    "lace", "lava", "leap", "lore", "maze", "meow", "mild", "mint", "mule", "nail",
+    "nerd", "nest", "noon", "note", "oval", "pace", "pack", "pale", "path", "peek",
+    "peer", "perk", "pick", "pile", "pink", "pipe", "poke", "pose", "pour", "puff",
+    "quiz", "rage", "ramp", "rank", "read", "reel", "ring", "rise", "roar", "robe",
+    "rush", "rust", "sage", "sail", "seat", "shed", "shot", "skip", "slam", "snap",
+    "soak", "sock", "span", "spin", "spot", "stab", "star", "stem", "stop", "stun",
+    "swim", "tame", "tank", "tarp", "task", "test", "time", "toil", "trap", "trim",
+    "tune", "vase", "vine", "void", "walk", "wave", "weep", "wild", "wing", "wipe",
+    "yank", "yawn", "year", "yell", "zoom"
 ]
 
 medium_words = [
@@ -201,6 +218,8 @@ def sound_effect_play(effect):
             pygame.mixer.Sound.play(lose_sound)
         elif effect == "win_sound":
             pygame.mixer.Sound.play(win_sound)
+        elif effect == "ticking_sound":
+            pygame.mixer.Sound.play(ticking_sound)
     except pygame.error as e:
         print(f"Error loading music file. Exception: {e}")
 
@@ -208,8 +227,8 @@ def display_score(screen, score):
     # Drawing the score button on screen
     font_size_score = 70
     font_score = pygame.font.Font("DJB Chalk It Up.ttf", font_size_score)
-    score_text = font_score.render(f"Score: {score}", True, (255,255,255))
-    screen.blit(score_text, (29,40))
+    score_text = font_score.render(f"SCORE: {score}", True, (255,255,255))
+    screen.blit(score_text, (40,40))
 
 #timer_function
 def display_timer(screen , start_time, elapsed_time):
@@ -219,6 +238,9 @@ def display_timer(screen , start_time, elapsed_time):
     time_left_timer = max(0, start_time - elapsed_time)  # Ensure it doesn't go negative
     # Change color based on time
     color = (255,255,255) if time_left_timer > 10 else (255,0,0,)
+    if time_left_timer <= 10:
+        sound_effect_play("ticking_sound")
+        time.sleep(1)
     # Render the timer tex
     timer_text = font_timer.render(f"{int(time_left_timer)}", True, color)
     # Get the text's rectangle and center it on the screen
@@ -316,7 +338,7 @@ while running:
     screen.blit(scaled_background, (0, 0))
     #Draw the hint button and pause button
     screen.blit(hint_button, (28, 578))
-    screen.blit(pause_button, (1161,609))
+    screen.blit(pause_button, (1100,575))
 
     if show_hint == True:
         if not word_to_guess:  # Check if the word_to_guess is empty
@@ -340,10 +362,9 @@ while running:
     y_pos = 240
     spacing_scrambled = 36  # Adjust this value to control space between words
 
-    x_pos_un = 376
+    x_pos_un = 350
     y_pos_un = 445
     spacing_unscrambled = 18  # Adjust this value to control space between words
-
 
 
     # Function to calculate the total width of the text
@@ -407,8 +428,7 @@ while running:
     clock.tick(30)  # 30 FPS
 
     #Drawing the textures
-    screen.blit(hint_button,(28, 578))
-    screen.blit(pause_button, (1161, 609))
+
     display_score(screen,score)
 
     # Draw the scaled background
