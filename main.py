@@ -66,7 +66,7 @@ except FileNotFoundError:
     font_scrambled = pygame.font.SysFont(None, font_size_scrambled)
 
 # Timer 🕛
-start_time = 20  # Start with 30 seconds
+start_time = 11  # Start with 30 seconds
 time_left = start_time
 clock = pygame.time.Clock()
 start_ticks = pygame.time.get_ticks()  # Record the starting tick (in milliseconds)
@@ -218,8 +218,6 @@ def sound_effect_play(effect):
             pygame.mixer.Sound.play(lose_sound)
         elif effect == "win_sound":
             pygame.mixer.Sound.play(win_sound)
-        elif effect == "ticking_sound":
-            pygame.mixer.Sound.play(ticking_sound)
     except pygame.error as e:
         print(f"Error loading music file. Exception: {e}")
 
@@ -238,9 +236,11 @@ def display_timer(screen , start_time, elapsed_time):
     time_left_timer = max(0, start_time - elapsed_time)  # Ensure it doesn't go negative
     # Change color based on time
     color = (255,255,255) if time_left_timer > 10 else (255,0,0,)
-    if time_left_timer <= 10:
-        sound_effect_play("ticking_sound")
+    if time_left_timer > 0 and time_left_timer <= 10:
+        pygame.mixer.Sound.play(ticking_sound)
         time.sleep(1)
+    if time_left_timer == 0:
+        ticking_sound.stop()
     # Render the timer tex
     timer_text = font_timer.render(f"{int(time_left_timer)}", True, color)
     # Get the text's rectangle and center it on the screen
