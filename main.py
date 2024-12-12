@@ -10,7 +10,7 @@ ticking_sound = pygame.mixer.Sound("ticking.mp3")
 
 # Load and play music
 pygame.mixer.music.load("Lukrembo.mp3")
-pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1)  # Play indefinitely
 
 #Loading sound effects
@@ -23,7 +23,7 @@ unpause_sound = pygame.mixer.Sound("unpause.mp3")
 score_sound = pygame.mixer.Sound("Score_card.wav")
 
 # Adjust volumes for sound effects
-ticking_sound.set_volume(0.5)
+ticking_sound.set_volume(0.4)
 win_sound.set_volume(0.2)
 lose_sound.set_volume(0.2)
 hint_sound.set_volume(0.2)
@@ -39,7 +39,7 @@ pygame.display.set_caption("Word Scramble")
 icon = pygame.image.load('crossword.png')
 pygame.display.set_icon(icon)
 
-#Loading the Assets 😭 (crying in pain)
+#Loading the Assets
 hint_button = pygame.image.load("hint_button.png")
 hint_button = pygame.transform.scale(hint_button, (135, 132))
 pause_button = pygame.image.load("pause_button.png")
@@ -66,7 +66,7 @@ except FileNotFoundError:
     font_scrambled = pygame.font.SysFont(None, font_size_scrambled)
 
 # Timer 🕛
-start_time = 11  # Start with 30 seconds
+start_time = 61  # Start with 30 seconds
 time_left = start_time
 clock = pygame.time.Clock()
 start_ticks = pygame.time.get_ticks()  # Record the starting tick (in milliseconds)
@@ -403,13 +403,6 @@ while running:
     for word in scrambled_word:
         render_word_with_feedback(screen, scrambled_word, user_input, font, x_pos_un, y_pos_un, spacing_unscrambled,word_to_guess)
 
-
-    # Draw the scrambled word on the screen
-
-      # Adjust position as needed
-    # Draw user input on the screen
-      # Adjust position as needed
-    # Calculate elapsed time
     current_ticks = pygame.time.get_ticks()
     elapsed_time = (current_ticks - start_ticks) / 1000  # Convert milliseconds to seconds
     # Clear the screen and draw the background
